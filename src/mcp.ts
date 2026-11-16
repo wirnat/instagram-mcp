@@ -7,7 +7,7 @@ import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprot
 import { cfg } from './config.js'
 import { IgError } from './errors.js'
 import type { IgClient } from './ig/client.js'
-import { allTools, getTool, inputSchema, flag } from './tools/registry.js'
+import { allTools, getTool, inputSchema, flag, changesAccount } from './tools/registry.js'
 
 export const VERSION = '0.1.0'
 
@@ -22,6 +22,9 @@ export const runTool = async (client: IgClient, name: string, args: Record<strin
   const tool = getTool(name)
   if (!tool) throw new Error(`Unknown tool: ${name}`)
   const { instant, ...rest } = args
+  if (cfg.readOnly && changesAccount(tool)) {
+    return { done: false, error: 'read-only', message: `${name} changes the Instagram account, and this server runs in read-only mode (INSTAGRAM_MCP_READ_ONLY).` }
+  }
   const q = client.queue
   if (tool.risk !== 'read' && q.paused) {
     return { done: false, paused: true, pausedUntil: new Date(q.pausedUntil).toISOString(), reason: q.pauseReason }
@@ -47,7 +50,7 @@ export const runTool = async (client: IgClient, name: string, args: Record<strin
 export const buildServer = (client: IgClient): Server => {
   const server = new Server({ name: 'instagram-mcp', version: VERSION }, { capabilities: { tools: {} }, instructions: INSTRUCTIONS })
   server.setRequestHandler(ListToolsRequestSchema, async () => ({
-    tools: allTools().map(t => ({
+    tools: allTools().filter(t => !(cfg.readOnly && changesAccount(t))).map(t => ({
       name: t.name,
       description: t.description,
       inputSchema: inputSchema(t),

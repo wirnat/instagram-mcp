@@ -27,6 +27,16 @@ export const defineTool = (t: Tool): void => {
 }
 
 export const allTools = (): Tool[] => [...tools.values()]
+
+/** Write tools that change the Instagram account itself, as opposed to local data on the server. */
+const ACCOUNT_WRITES = new Set(['dm_mark_seen', 'ig_post_edit', 'ig_post_delete', 'note_set', 'profile_update', 'draft_schedule'])
+
+/**
+ * True when a tool changes the Instagram account (sends, likes, follows, comments, publishes, edits).
+ * Background scans are marked `action` because they run long jobs, but they only read, so they are excluded.
+ */
+export const changesAccount = (t: Tool): boolean =>
+  (t.risk === 'action' && !t.name.endsWith('_scan')) || ACCOUNT_WRITES.has(t.name)
 export const getTool = (name: string): Tool | undefined => tools.get(name)
 
 const INSTANT: Param = {

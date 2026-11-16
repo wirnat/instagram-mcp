@@ -97,6 +97,29 @@ docker compose up -d
 
 The server listens on `127.0.0.1:48300` on the host. Agents connect with the header `Authorization: Bearer <INSTAGRAM_MCP_TOKEN>`. If your agents run on another machine, put a TLS reverse proxy in front of it.
 
+### Several accounts on one host
+
+One container controls one account. Give each account its own project name, `.env` file, and host port, so containers and data volumes stay separate:
+
+```sh
+# west.env
+INSTAGRAM_MCP_TOKEN=...
+HOST_PORT=48301
+TZ=Asia/Jakarta
+```
+
+```sh
+docker compose -p ig-west --env-file west.env run --rm -p 127.0.0.1:6080:6080 instagram-mcp login
+docker compose -p ig-west --env-file west.env up -d
+```
+
+Log in to one account at a time, since every login uses port 6080 for noVNC.
+
+Two settings help when several agents share a host:
+
+- `INSTAGRAM_MCP_READ_ONLY=1` on the server turns an account into a research account. Tools that change the account (DMs, likes, follows, comments, posts, profile edits) are hidden and refused, while reading, searching, and follower scans still work.
+- `INSTAGRAM_MCP_REMOTE=1` on the agent's side makes `instagram-mcp call` and `status` talk only to the running server at `INSTAGRAM_MCP_PORT` with `INSTAGRAM_MCP_TOKEN`. If the server is down, the command fails instead of starting a local browser. Giving each agent only its own account's port and token keeps agents from using each other's accounts.
+
 ## Tools
 
 There are 67 tools. ✅ means the tool was tested against real Instagram on November 14, 2026 with a test account. 🧪 means the code exists but hasn't been tested yet, so don't rely on it.
@@ -166,6 +189,8 @@ Two more rules come from things that went wrong during testing:
 | `INSTAGRAM_MCP_PORT` | `48300` | HTTP port |
 | `INSTAGRAM_MCP_HOST` | `127.0.0.1` | Address to listen on |
 | `INSTAGRAM_MCP_TOKEN` | empty | Bearer token, required when the host is not 127.0.0.1 |
+| `INSTAGRAM_MCP_READ_ONLY` | `false` | Refuse every tool that changes the account |
+| `INSTAGRAM_MCP_REMOTE` | `false` | `call` and `status` only talk to a running server |
 | `INSTAGRAM_MCP_HEADLESS` | `false` | Run Chrome without a window |
 | `INSTAGRAM_MCP_CHROME_CHANNEL` | `chrome` | Leave empty to use Playwright's bundled Chromium |
 | `INSTAGRAM_MCP_MIN_GAP_MS`, `INSTAGRAM_MCP_MAX_GAP_MS` | `3500`, `8000` | Gap between requests |

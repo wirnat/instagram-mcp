@@ -69,6 +69,16 @@ const main = async () => {
     return
   }
 
+  if (cfg.remote && (cmd === 'call' || cmd === 'status') && !(await daemonUp())) {
+    console.log(JSON.stringify({ error: { code: 'server-down', message: `No instagram-mcp server answers at ${daemonUrl} (INSTAGRAM_MCP_REMOTE is set, so no local browser is started).` } }, null, 2))
+    process.exitCode = 1
+    return
+  }
+  if (cmd === 'status' && cfg.remote) {
+    const out = await daemonPost('/call', { tool: 'account_info', args: { instant: true } })
+    console.log(JSON.stringify(out.result ?? out, null, 2))
+    return
+  }
   if (cmd === 'call' && (await daemonUp())) {
     const out = await daemonPost('/call', { tool: rest[0], args: rest[1] ? JSON.parse(rest[1]) : {} })
     console.log(JSON.stringify(out.result ?? out, null, 2))

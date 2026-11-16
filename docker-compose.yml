@@ -1,20 +1,30 @@
+# One container controls one Instagram account. To run several accounts on one host,
+# start a separate project per account, each with its own .env file:
+#   docker compose -p ig-west --env-file west.env up -d
+# The project name keeps containers and data volumes apart.
 services:
   instagram-mcp:
     build: .
     image: instagram-mcp:latest
-    container_name: instagram-mcp
     restart: unless-stopped
     # Chromium needs more shared memory than the Docker default (64 MB).
     shm_size: 1gb
     environment:
       # Required. Agents connect with the header "Authorization: Bearer <token>".
       INSTAGRAM_MCP_TOKEN: ${INSTAGRAM_MCP_TOKEN:?set INSTAGRAM_MCP_TOKEN in .env}
+      # 1 = research account: tools that change the account (DM, like, follow, comment, post) are refused.
+      INSTAGRAM_MCP_READ_ONLY: ${INSTAGRAM_MCP_READ_ONLY:-}
+      INSTAGRAM_MCP_LIMIT_COLD_DM: ${INSTAGRAM_MCP_LIMIT_COLD_DM:-15}
+      INSTAGRAM_MCP_LIMIT_LIKE: ${INSTAGRAM_MCP_LIMIT_LIKE:-150}
+      INSTAGRAM_MCP_LIMIT_FOLLOW: ${INSTAGRAM_MCP_LIMIT_FOLLOW:-60}
+      INSTAGRAM_MCP_LIMIT_COMMENT: ${INSTAGRAM_MCP_LIMIT_COMMENT:-60}
+      # Daily limits reset at midnight in this time zone.
       TZ: ${TZ:-UTC}
     ports:
       # Bound to the server's localhost only. Put a TLS reverse proxy in front for remote access.
-      - "127.0.0.1:48300:48300"
+      - "127.0.0.1:${HOST_PORT:-48300}:48300"
     volumes:
-      - instagram-mcp-data:/data
+      - data:/data
 
 volumes:
-  instagram-mcp-data:
+  data:

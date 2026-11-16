@@ -26,6 +26,10 @@ export const cfg = {
   maxGapMs: Number(process.env.INSTAGRAM_MCP_MAX_GAP_MS || 8000),
   /** Calls that would wait longer than this are rejected immediately with `busy`. */
   maxWaitMs: 50_000,
+  /** Research mode: refuse every tool that changes the Instagram account (DMs, likes, follows, comments, posts). */
+  readOnly: bool(process.env.INSTAGRAM_MCP_READ_ONLY, false),
+  /** Client-only mode for `call` and `status`: talk to the running HTTP server and never start a local browser. */
+  remote: bool(process.env.INSTAGRAM_MCP_REMOTE, false),
   /** Daily limits for risky actions. */
   dailyLimits: {
     coldDm: Number(process.env.INSTAGRAM_MCP_LIMIT_COLD_DM || 15),
