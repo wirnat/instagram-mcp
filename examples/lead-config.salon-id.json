@@ -1,0 +1,126 @@
+{
+  "types": [
+    {
+      "name": "barbershop",
+      "pattern": "barber|cukur|pangkas"
+    },
+    {
+      "name": "clinic",
+      "pattern": "klinik|clinic|aesthetic|estetik|derma|skin ?care|dr\\."
+    },
+    {
+      "name": "salon",
+      "pattern": "salon|hair|rambut"
+    },
+    {
+      "name": "spa",
+      "pattern": "\\bspa\\b|spa_|massage|pijat|reflex|wellness"
+    },
+    {
+      "name": "nail/lash",
+      "pattern": "nail|lash|brow|kuku|bulu mata"
+    },
+    {
+      "name": "salon",
+      "pattern": "beauty|studio"
+    }
+  ],
+  "competitorApps": [
+    "fresha",
+    "booksy",
+    "setmore",
+    "simplybook",
+    "zenoti",
+    "vagaro",
+    "mindbody",
+    "glamify",
+    "majoo",
+    "moka",
+    "qasir",
+    "olsera",
+    "treatwell",
+    "phorest",
+    "reservio",
+    "appointy",
+    "calendly",
+    "square\\.site",
+    "getsquire",
+    "glossgenius",
+    "youcanbook"
+  ],
+  "cities": [
+    {
+      "name": "Balikpapan",
+      "pattern": "balikpapan"
+    },
+    {
+      "name": "Bali",
+      "pattern": "\\bbali\\b|denpasar|ubud|seminyak|canggu|\\bkuta\\b|tabanan|singaraja|gianyar|jimbaran|uluwatu|sanur|dalung|renon|kerobokan|nusa dua"
+    },
+    {
+      "name": "Jakarta",
+      "pattern": "jakarta|jaksel|jakbar|jaktim|jakut|jakpus|kemang|kelapa gading"
+    },
+    {
+      "name": "Tangerang",
+      "pattern": "tangerang|bsd|serpong|bintaro"
+    },
+    {
+      "name": "Bekasi",
+      "pattern": "bekasi"
+    },
+    {
+      "name": "Depok",
+      "pattern": "depok"
+    },
+    {
+      "name": "Bogor",
+      "pattern": "bogor"
+    },
+    {
+      "name": "Surabaya",
+      "pattern": "surabaya|sidoarjo"
+    },
+    {
+      "name": "Bandung",
+      "pattern": "bandung|cimahi"
+    },
+    {
+      "name": "Yogyakarta",
+      "pattern": "yogya|jogja"
+    },
+    {
+      "name": "Semarang",
+      "pattern": "semarang"
+    },
+    {
+      "name": "Malang",
+      "pattern": "malang"
+    },
+    {
+      "name": "Medan",
+      "pattern": "medan"
+    },
+    {
+      "name": "Makassar",
+      "pattern": "makassar"
+    },
+    {
+      "name": "Lombok",
+      "pattern": "lombok|mataram"
+    },
+    {
+      "name": "Solo",
+      "pattern": "\\bsolo\\b|surakarta"
+    }
+  ],
+  "idealFollowers": [
+    1000,
+    30000
+  ],
+  "excludePattern": "parfum|coming soon|temporarily closed|tutup sementara|permanently closed|academy|kursus saja",
+  "branchPattern": "cabang|\\bcab\\.|branch|outlets|locations|find us at",
+  "noBranchPattern": "tidak (memiliki|punya|ada) cabang|no branch",
+  "defaultCountryCode": "62",
+  "mobilePrefix": "8"
+}

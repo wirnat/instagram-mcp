@@ -1,0 +1,22 @@
+{
+  "name": "instagram-mcp",
+  "version": "0.1.0",
+  "description": "MCP server that controls one Instagram account through a real, logged-in Chrome browser. No extension required.",
+  "type": "module",
+  "bin": { "instagram-mcp": "dist/index.js" },
+  "license": "MIT",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/index.js serve --http",
+    "test": "npm run build && node --test test/*.test.mjs"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.30.0",
+    "playwright-core": "^1.65.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.9.2",
+    "typescript": "^5.9.3"
+  }
+}
