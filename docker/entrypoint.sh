@@ -12,7 +12,9 @@ rm -f /data/profile/SingletonLock /data/profile/SingletonCookie /data/profile/Si
 case "$1" in
   login)
     # The Chromium window is visible at http://localhost:6080/vnc.html through an SSH tunnel.
-    x11vnc -display :99 -forever -shared -nopw -quiet -rfbport 5900 &
+    # -clear_all releases any stuck Caps Lock at start; -skip_lockkeys ignores lock-key sync from the
+    # browser viewer, which otherwise can leave Caps Lock latched so every letter comes out uppercase.
+    x11vnc -display :99 -forever -shared -nopw -quiet -rfbport 5900 -clear_all -skip_lockkeys &
     websockify --web /usr/share/novnc 6080 localhost:5900 &
     exec node /app/dist/index.js login "${2:-30}"
     ;;
