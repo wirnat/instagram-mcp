@@ -205,17 +205,23 @@ defineTool({
 
 defineTool({
   name: 'dm_requests',
-  description: 'Pending message requests (DMs from people the account is not connected with). These often contain inquiries from potential customers.',
+  description: 'Pending message requests (DMs from people the account is not connected with), including hidden requests (`hidden: true`). These often contain inquiries from potential customers.',
   params: [],
   risk: 'read',
   handler: async (_a, ig) => {
+    // Same variables the web app sends on /direct/requests/ (recorded with `probe`, 2026-11-20).
     const j = await ig.gql('PolarisDirectMessageRequestQuery', {
       device_id_for_iris_subscription: await ig.browser.irisDeviceId(),
       __relay_internal__pv__IGD30DayAgoTimestampMsrelayprovider: String(Date.now() - 30 * 86_400_000),
+      __relay_internal__pv__IGDPinnedThreadsRenderEnabledGKrelayprovider: true,
+      __relay_internal__pv__IGDMaxUnreadMessagesCountrelayprovider: 5,
+      __relay_internal__pv__IGDThreadListActionsEnabledGKrelayprovider: true,
     })
-    const edges = j?.data?.get_slide_mailbox_for_iris_subscription?.threads_by_folder?.edges ?? []
-    const threads = edges.map((e: any) => e.node?.as_ig_direct_thread ?? e.node).filter((t: any) => t?.thread_key)
-    return { requests: threads.map(normThread) }
+    const folder = (box: any, hidden: boolean) => (box?.threads_by_folder?.edges ?? [])
+      .map((e: any) => e.node?.as_ig_direct_thread ?? e.node)
+      .filter((t: any) => t?.thread_key)
+      .map((t: any) => ({ ...normThread(t), hidden }))
+    return { requests: [...folder(j?.data?.get_slide_mailbox_for_iris_subscription, false), ...folder(j?.data?.spamMailbox, true)] }
   },
 })
 
