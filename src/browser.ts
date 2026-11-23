@@ -485,8 +485,10 @@ export class IgBrowser {
     // The web app sends some queries to /graphql/query and others to /api/graphql. The wrong endpoint
     // returns empty data without an error, so the other one is tried once and the working one is remembered.
     const preferred = opts.path ?? this.gqlPaths.get(name) ?? (/^(IGD|IGDirect|useIGD)|Mutation$/.test(name) ? '/api/graphql' : '/graphql/query')
-    // Mutations are never tried twice, so an action is never sent twice.
-    const single = !!opts.path || this.confirmedPaths.has(name) || /Mutation$/.test(name)
+    // Mutations are never tried twice, so an action is never sent twice. Read queries always keep the
+    // other endpoint as a fallback, even after a path was confirmed: Instagram moves queries between
+    // endpoints, and a stale confirmed path otherwise returns empty data forever.
+    const single = !!opts.path || /Mutation$/.test(name)
     const candidates = single ? [preferred] : [preferred, preferred === '/api/graphql' ? '/graphql/query' : '/api/graphql']
     let last: any
     for (const path of candidates) {
@@ -500,8 +502,9 @@ export class IgBrowser {
         continue
       }
       if (hasData) {
+        const changed = this.gqlPaths.get(name) !== path
         this.gqlPaths.set(name, path)
-        if (!this.confirmedPaths.has(name)) {
+        if (changed || !this.confirmedPaths.has(name)) {
           this.confirmedPaths.add(name)
           this.saveLearned()
         }
